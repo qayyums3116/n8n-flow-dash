@@ -52,6 +52,26 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				workflow: {
+					primary: 'hsl(var(--workflow-primary))',
+					'primary-foreground': 'hsl(var(--workflow-primary-foreground))',
+					'primary-hover': 'hsl(var(--workflow-primary-hover))',
+					success: 'hsl(var(--workflow-success))',
+					'success-foreground': 'hsl(var(--workflow-success-foreground))',
+					'success-light': 'hsl(var(--workflow-success-light))',
+					warning: 'hsl(var(--workflow-warning))',
+					'warning-foreground': 'hsl(var(--workflow-warning-foreground))',
+					'warning-light': 'hsl(var(--workflow-warning-light))',
+					danger: 'hsl(var(--workflow-danger))',
+					'danger-foreground': 'hsl(var(--workflow-danger-foreground))',
+					'danger-light': 'hsl(var(--workflow-danger-light))',
+					info: 'hsl(var(--workflow-info))',
+					'info-foreground': 'hsl(var(--workflow-info-foreground))',
+					'info-light': 'hsl(var(--workflow-info-light))',
+					neutral: 'hsl(var(--workflow-neutral))',
+					'neutral-foreground': 'hsl(var(--workflow-neutral-foreground))',
+					'neutral-light': 'hsl(var(--workflow-neutral-light))',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -88,7 +108,19 @@ export default {
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-subtle': 'pulse 3s ease-in-out infinite',
+				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'slide-up': 'slide-up 0.3s ease-out forwards'
+			},
+			boxShadow: {
+				'workflow': 'var(--shadow-workflow)',
+				'workflow-lg': 'var(--shadow-workflow-lg)'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-info': 'var(--gradient-info)'
 			}
 		}
 	},
