@@ -60,34 +60,34 @@ export const WorkflowDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-lg border border-border bg-card text-center">
-          <div className="text-2xl font-bold text-workflow-primary-foreground">{stats.total}</div>
-          <div className="text-sm text-muted-foreground">Total Workflows</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-3 sm:p-4 rounded-lg border border-border bg-card text-center">
+          <div className="text-xl sm:text-2xl font-bold text-workflow-primary-foreground">{stats.total}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">Total Workflows</div>
         </div>
-        <div className="p-4 rounded-lg border border-border bg-card text-center">
-          <div className="text-2xl font-bold text-workflow-success">{stats.active}</div>
-          <div className="text-sm text-muted-foreground">Active</div>
+        <div className="p-3 sm:p-4 rounded-lg border border-border bg-card text-center">
+          <div className="text-xl sm:text-2xl font-bold text-workflow-success">{stats.active}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">Active</div>
         </div>
-        <div className="p-4 rounded-lg border border-border bg-card text-center">
-          <div className="text-2xl font-bold text-workflow-info">{stats.running}</div>
-          <div className="text-sm text-muted-foreground">Running</div>
+        <div className="p-3 sm:p-4 rounded-lg border border-border bg-card text-center">
+          <div className="text-xl sm:text-2xl font-bold text-workflow-info">{stats.running}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">Running</div>
         </div>
-        <div className="p-4 rounded-lg border border-border bg-card text-center">
-          <div className="text-2xl font-bold text-workflow-danger">{stats.errors}</div>
-          <div className="text-sm text-muted-foreground">Errors</div>
+        <div className="p-3 sm:p-4 rounded-lg border border-border bg-card text-center">
+          <div className="text-xl sm:text-2xl font-bold text-workflow-danger">{stats.errors}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">Errors</div>
         </div>
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-gradient-primary">
-            <Activity className="w-5 h-5 text-workflow-primary-foreground" />
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-workflow-primary-foreground" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Workflows</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">Workflows</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Manage and monitor your n8n workflows
             </p>
           </div>
@@ -97,7 +97,7 @@ export const WorkflowDashboard = () => {
           variant="outline"
           size="sm"
           disabled={isLoading}
-          className="border-workflow-primary/20 hover:bg-workflow-primary/5"
+          className="border-workflow-primary/20 hover:bg-workflow-primary/5 w-full sm:w-auto"
         >
           <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
@@ -106,8 +106,8 @@ export const WorkflowDashboard = () => {
 
       {/* Error State */}
       {error && (
-        <div className="p-4 rounded-lg border border-workflow-danger/20 bg-workflow-danger/5 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-workflow-danger" />
+        <div className="p-3 sm:p-4 rounded-lg border border-workflow-danger/20 bg-workflow-danger/5 flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-workflow-danger flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-workflow-danger-foreground">Connection Error</p>
             <p className="text-xs text-muted-foreground">
@@ -119,10 +119,10 @@ export const WorkflowDashboard = () => {
 
       {/* Workflows Grid */}
       {workflows.length === 0 ? (
-        <div className="text-center py-12">
-          <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No Workflows Found</h3>
-          <p className="text-muted-foreground">
+        <div className="text-center py-8 sm:py-12">
+          <Activity className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No Workflows Found</h3>
+          <p className="text-sm text-muted-foreground px-4 sm:px-0">
             No workflows are currently available. Check your n8n instance or create new workflows.
           </p>
         </div>

@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { StatusBadge } from './StatusBadge';
 import { StatusModal } from './StatusModal';
 import { useToast } from '@/hooks/use-toast';
 import { apiService, Workflow } from '@/services/apiService';
-import { Play, Square, BarChart3, Clock } from 'lucide-react';
+import { Play, BarChart3, Clock } from 'lucide-react';
 
 interface WorkflowCardProps {
   workflow: Workflow;
@@ -78,64 +78,78 @@ export const WorkflowCard = ({ workflow, onWorkflowUpdate }: WorkflowCardProps) 
 
   return (
     <>
-      <Card className="p-6 transition-all duration-300 hover:shadow-workflow-lg border-2 hover:border-workflow-primary/20 group">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h3 className="text-lg font-semibold text-foreground group-hover:text-workflow-primary-foreground transition-colors">
-                {workflow.name}
-              </h3>
-              {workflow.status && <StatusBadge status={workflow.status} />}
+      <Card className="border-border bg-card/70 backdrop-blur-sm hover:bg-card/90 transition-all duration-300 shadow-workflow">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex-1 min-w-0 w-full sm:w-auto">
+              <div className="flex items-center gap-3 mb-2">
+                <StatusBadge status={workflow.active ? 'success' : 'unknown'} />
+                <CardTitle className="text-base sm:text-lg text-foreground truncate">
+                  {workflow.name}
+                </CardTitle>
+              </div>
+              {workflow.description && (
+                <CardDescription className="text-sm text-muted-foreground line-clamp-2">
+                  {workflow.description}
+                </CardDescription>
+              )}
             </div>
-            {workflow.description && (
-              <p className="text-sm text-muted-foreground mb-3">
-                {workflow.description}
-              </p>
-            )}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>Last executed: {formatDate(workflow.lastExecuted)}</span>
+            
+            <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+              <div className="text-xs text-muted-foreground sm:hidden">
+                ID: {workflow.id}
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-xs text-muted-foreground hidden sm:block">
+                  ID: {workflow.id}
+                </div>
+                <Switch
+                  checked={workflow.active}
+                  onCheckedChange={handleToggleActive}
+                  disabled={isLoading}
+                  className="data-[state=checked]:bg-workflow-success"
+                />
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {workflow.active ? 'Active' : 'Inactive'}
-            </span>
-            <Switch
-              checked={workflow.active}
-              onCheckedChange={handleToggleActive}
-              disabled={isLoading}
-              className="data-[state=checked]:bg-workflow-success"
-            />
-          </div>
-        </div>
+        </CardHeader>
 
-        <div className="flex items-center gap-2 pt-4 border-t border-border">
-          <Button
-            onClick={handleExecute}
-            disabled={isLoading || !workflow.active}
-            size="sm"
-            className="bg-workflow-primary hover:bg-workflow-primary-hover text-workflow-primary-foreground"
-          >
-            <Play className="w-4 h-4 mr-1" />
-            Execute
-          </Button>
-          
-          <Button
-            onClick={() => setShowStatusModal(true)}
-            variant="outline"
-            size="sm"
-            className="border-workflow-primary/20 hover:bg-workflow-primary/5"
-          >
-            <BarChart3 className="w-4 h-4 mr-1" />
-            Status
-          </Button>
-
-          <div className="ml-auto text-xs text-muted-foreground font-medium">
-            ID: {workflow.id}
+        <CardContent className="p-4 sm:p-6 pt-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Last executed:</span>
+                <span className="sm:hidden">Last:</span>
+                <span>{workflow.lastExecuted ? formatDate(workflow.lastExecuted) : 'Never'}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button
+                onClick={handleExecute}
+                disabled={isLoading}
+                size="sm"
+                className="bg-gradient-primary hover:bg-workflow-primary-hover text-workflow-primary-foreground flex-1 sm:flex-none"
+              >
+                <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Execute</span>
+                <span className="sm:hidden">Run</span>
+              </Button>
+              
+              <Button
+                onClick={() => setShowStatusModal(true)}
+                variant="outline"
+                size="sm"
+                className="border-workflow-info/30 text-workflow-info hover:bg-workflow-info/10 flex-1 sm:flex-none"
+              >
+                <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Status</span>
+                <span className="sm:hidden">Info</span>
+              </Button>
+            </div>
           </div>
-        </div>
+        </CardContent>
       </Card>
 
       <StatusModal
