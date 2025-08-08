@@ -5,6 +5,7 @@ import { apiService, Workflow } from '@/services/apiService';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Activity, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import WorkflowToggle from './WorkflowToggle'; // ✅ Include if used in the UI
 
 export const WorkflowDashboard = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -16,13 +17,15 @@ export const WorkflowDashboard = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await apiService.getWorkflows();
-      setWorkflows(data);
+      const result = await apiService.getWorkflows();
+      const workflowArray = result.data || [];
+      const sorted = workflowArray.sort((a, b) => a.name.localeCompare(b.name));
+      setWorkflows(sorted);
     } catch (error) {
       setError('Failed to fetch workflows');
       toast({
         title: "Error",
-        description: "Failed to load workflows. Showing demo data.",
+        description: "Failed to load workflows. Please check your backend connection.",
         variant: "destructive",
       });
     } finally {
@@ -34,15 +37,12 @@ export const WorkflowDashboard = () => {
     fetchWorkflows();
   }, []);
 
-  const getStatusCounts = () => {
-    const counts = {
-      total: workflows.length,
-      active: workflows.filter(w => w.active).length,
-      running: workflows.filter(w => w.status === 'running').length,
-      errors: workflows.filter(w => w.status === 'error').length,
-    };
-    return counts;
-  };
+  const getStatusCounts = () => ({
+    total: workflows.length,
+    active: workflows.filter(w => w.active).length,
+    running: workflows.filter(w => w.status === 'running').length,
+    errors: workflows.filter(w => w.status === 'error').length,
+  });
 
   const stats = getStatusCounts();
 
@@ -92,16 +92,20 @@ export const WorkflowDashboard = () => {
             </p>
           </div>
         </div>
-        <Button
-          onClick={fetchWorkflows}
-          variant="outline"
-          size="sm"
-          disabled={isLoading}
-          className="border-workflow-primary/20 hover:bg-workflow-primary/5 w-full sm:w-auto"
-        >
-          <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* ✅ Include WorkflowToggle if used */}
+          <WorkflowToggle />
+          <Button
+            onClick={fetchWorkflows}
+            variant="outline"
+            size="sm"
+            disabled={isLoading}
+            className="border-workflow-primary/20 hover:bg-workflow-primary/5 w-full sm:w-auto"
+          >
+            <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Error State */}

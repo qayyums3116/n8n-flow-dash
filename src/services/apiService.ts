@@ -1,19 +1,15 @@
 import axios from 'axios';
 
-// Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-const API_KEY = import.meta.env.VITE_API_KEY || '123456';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+console.log("BASE URL:", API_BASE_URL); // ✅ Confirm actual value
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'x-api-key': API_KEY,
     'Content-Type': 'application/json',
   },
 });
 
-// Types
 export interface Workflow {
   id: string;
   name: string;
@@ -31,101 +27,56 @@ export interface WorkflowStatus {
   message?: string;
 }
 
-// API Service
 export const apiService = {
-  // Get all workflows
   async getWorkflows(): Promise<Workflow[]> {
     try {
       const response = await api.get('/api/workflows');
+      console.log('✅ Workflows fetched:', response.data); // ✅ See if it's correct
       return response.data;
     } catch (error) {
-      console.error('Error fetching workflows:', error);
-      // Return mock data for development/demo
-      return [
-        {
-          id: '1',
-          name: 'Customer Onboarding',
-          active: true,
-          status: 'success',
-          lastExecuted: '2024-01-07T10:30:00Z',
-          description: 'Automated customer onboarding process'
-        },
-        {
-          id: '2',
-          name: 'Data Sync Process',
-          active: false,
-          status: 'waiting',
-          lastExecuted: '2024-01-06T15:45:00Z',
-          description: 'Synchronize data between systems'
-        },
-        {
-          id: '3',
-          name: 'Email Campaign',
-          active: true,
-          status: 'running',
-          lastExecuted: '2024-01-07T09:15:00Z',
-          description: 'Weekly email campaign automation'
-        },
-        {
-          id: '4',
-          name: 'Report Generation',
-          active: false,
-          status: 'error',
-          lastExecuted: '2024-01-05T12:00:00Z',
-          description: 'Monthly sales report generation'
-        }
-      ];
+      console.error('❌ Error fetching workflows:', error); // 🧠 This will catch CORS, 500s, network issues
+      return [];
     }
   },
 
-  // Activate workflow
   async activateWorkflow(id: string): Promise<void> {
     try {
-      await api.post(`/api/workflows/${id}/activate`);
+      const response = await api.post(`/api/workflows/${id}/activate`);
+      console.log(`✅ Activated workflow ${id}`, response.data);
     } catch (error) {
-      console.error(`Error activating workflow ${id}:`, error);
-      // Simulate success for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.error(`❌ Error activating workflow ${id}:`, error);
     }
   },
 
-  // Deactivate workflow
   async deactivateWorkflow(id: string): Promise<void> {
     try {
-      await api.post(`/api/workflows/${id}/deactivate`);
+      const response = await api.post(`/api/workflows/${id}/deactivate`);
+      console.log(`✅ Deactivated workflow ${id}`, response.data);
     } catch (error) {
-      console.error(`Error deactivating workflow ${id}:`, error);
-      // Simulate success for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.error(`❌ Error deactivating workflow ${id}:`, error);
     }
   },
 
-  // Execute workflow
   async executeWorkflow(id: string): Promise<void> {
     try {
-      await api.post(`/api/workflows/${id}/execute`);
+      const response = await api.post(`/api/workflows/${id}/execute`);
+      console.log(`✅ Executed workflow ${id}`, response.data);
     } catch (error) {
-      console.error(`Error executing workflow ${id}:`, error);
-      // Simulate success for demo
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.error(`❌ Error executing workflow ${id}:`, error);
     }
   },
 
-  // Get workflow status
   async getWorkflowStatus(id: string): Promise<WorkflowStatus> {
     try {
       const response = await api.get(`/api/workflows/${id}/status`);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching status for workflow ${id}:`, error);
-      // Return mock status for demo
+      console.error(`❌ Error fetching status for workflow ${id}:`, error);
       return {
         id,
-        status: 'success',
-        lastExecuted: new Date().toISOString(),
-        executionCount: Math.floor(Math.random() * 100) + 1,
-        message: 'Workflow completed successfully'
+        status: 'unknown',
+        message: 'Status not available',
       };
     }
-  }
+  },
 };

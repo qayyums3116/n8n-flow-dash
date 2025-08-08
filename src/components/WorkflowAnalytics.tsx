@@ -1,33 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, Activity, Clock, CheckCircle } from 'lucide-react';
+import { TrendingUp, Activity, Clock } from 'lucide-react';
+import { apiService, Workflow } from '@/services/apiService';
 
 const WorkflowAnalytics = () => {
-  // Sample data for charts
-  const executionData = [
-    { name: 'Mon', executions: 24, success: 22, failed: 2 },
-    { name: 'Tue', executions: 32, success: 30, failed: 2 },
-    { name: 'Wed', executions: 18, success: 16, failed: 2 },
-    { name: 'Thu', executions: 45, success: 42, failed: 3 },
-    { name: 'Fri', executions: 38, success: 35, failed: 3 },
-    { name: 'Sat', executions: 15, success: 14, failed: 1 },
-    { name: 'Sun', executions: 20, success: 19, failed: 1 },
-  ];
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const wf = await apiService.getWorkflows();
+        setWorkflows(wf);
+      } catch (err) {
+        console.error('Failed to fetch workflows:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const getDayName = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { weekday: 'short' }); // e.g., Mon, Tue
+  };
+
+  const executionData = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
+    const dayWorkflows = workflows.filter(wf => getDayName(wf.lastExecuted || '') === day);
+    const success = dayWorkflows.filter(wf => wf.status === 'success').length;
+    const failed = dayWorkflows.filter(wf => wf.status === 'error').length;
+    return {
+      name: day,
+      executions: dayWorkflows.length,
+      success,
+      failed,
+    };
+  });
 
   const statusData = [
-    { name: 'Success', value: 138, color: 'hsl(var(--workflow-success))' },
-    { name: 'Failed', value: 14, color: 'hsl(var(--workflow-danger))' },
-    { name: 'Running', value: 8, color: 'hsl(var(--workflow-info))' },
-  ];
+    { name: 'Success', value: workflows.filter(w => w.status === 'success').length, color: 'hsl(var(--workflow-success))' },
+    { name: 'Failed', value: workflows.filter(w => w.status === 'error').length, color: 'hsl(var(--workflow-danger))' },
+    { name: 'Running', value: workflows.filter(w => w.status === 'running').length, color: 'hsl(var(--workflow-info))' },
+    { name: 'Waiting', value: workflows.filter(w => w.status === 'waiting').length, color: 'hsl(var(--workflow-warning))' }
+  ].filter(entry => entry.value > 0);
 
+  // Mock avg execution time (in seconds) for line chart
   const performanceData = [
-    { time: '00:00', avgTime: 2.3 },
-    { time: '04:00', avgTime: 1.8 },
-    { time: '08:00', avgTime: 3.2 },
-    { time: '12:00', avgTime: 4.1 },
-    { time: '16:00', avgTime: 3.5 },
-    { time: '20:00', avgTime: 2.1 },
+    { time: '00:00', avgTime: 2.1 },
+    { time: '04:00', avgTime: 3.4 },
+    { time: '08:00', avgTime: 1.8 },
+    { time: '12:00', avgTime: 4.0 },
+    { time: '16:00', avgTime: 3.2 },
+    { time: '20:00', avgTime: 2.6 },
   ];
 
   const RADIAN = Math.PI / 180;
@@ -68,15 +94,8 @@ const WorkflowAnalytics = () => {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={executionData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="name" 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-              />
-              <YAxis 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-              />
+              <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
               <Tooltip 
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
@@ -85,18 +104,8 @@ const WorkflowAnalytics = () => {
                   color: 'hsl(var(--foreground))'
                 }}
               />
-              <Bar 
-                dataKey="success" 
-                fill="hsl(var(--workflow-success))" 
-                radius={[2, 2, 0, 0]}
-                name="Successful"
-              />
-              <Bar 
-                dataKey="failed" 
-                fill="hsl(var(--workflow-danger))" 
-                radius={[2, 2, 0, 0]}
-                name="Failed"
-              />
+              <Bar dataKey="success" fill="hsl(var(--workflow-success))" radius={[2, 2, 0, 0]} name="Successful" />
+              <Bar dataKey="failed" fill="hsl(var(--workflow-danger))" radius={[2, 2, 0, 0]} name="Failed" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -143,10 +152,7 @@ const WorkflowAnalytics = () => {
           <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mt-4">
             {statusData.map((entry, index) => (
               <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: entry.color }}
-                />
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
                 <span className="text-muted-foreground">{entry.name}: {entry.value}</span>
               </div>
             ))}
@@ -169,15 +175,8 @@ const WorkflowAnalytics = () => {
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={performanceData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="time" 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-              />
-              <YAxis 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-              />
+              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
               <Tooltip 
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
@@ -187,10 +186,10 @@ const WorkflowAnalytics = () => {
                 }}
                 formatter={(value) => [`${value}s`, 'Avg Time']}
               />
-              <Line 
-                type="monotone" 
-                dataKey="avgTime" 
-                stroke="hsl(var(--workflow-info))" 
+              <Line
+                type="monotone"
+                dataKey="avgTime"
+                stroke="hsl(var(--workflow-info))"
                 strokeWidth={3}
                 dot={{ fill: 'hsl(var(--workflow-info))', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, fill: 'hsl(var(--workflow-info))' }}
