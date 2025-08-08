@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { WorkflowCard } from './WorkflowCard';
+import WorkflowAnalytics from './WorkflowAnalytics';
 import { apiService, Workflow } from '@/services/apiService';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Activity, AlertCircle, RefreshCw } from 'lucide-react';
@@ -136,6 +137,9 @@ export const WorkflowDashboard = () => {
           ))}
         </div>
       )}
+
+      {/* Analytics Section */}
+      <WorkflowAnalytics />
     </div>
   );
 };

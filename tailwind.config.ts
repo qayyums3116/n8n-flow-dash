@@ -120,7 +120,8 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-success': 'var(--gradient-success)',
-				'gradient-info': 'var(--gradient-info)'
+				'gradient-info': 'var(--gradient-info)',
+				'gradient-hero': 'var(--gradient-hero)'
 			}
 		}
 	},
